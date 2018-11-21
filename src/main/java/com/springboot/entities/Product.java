@@ -19,6 +19,9 @@ public class Product implements Serializable {
 	@Column(name="product_id")
 	private int productId;
 
+	@Column(name="buy_price")
+	private double buyPrice;
+
 	@Column(name="created_by")
 	private int createdBy;
 
@@ -33,18 +36,19 @@ public class Product implements Serializable {
 	@Column(name="modified_by")
 	private int modifiedBy;
 
-	private double price;
-
 	@Column(name="product_code")
 	private String productCode;
 
 	@Column(name="product_name")
 	private String productName;
 
-	private int quantity;
+	private float quantity;
 
 	@Column(name="quantity_limit")
-	private int quantityLimit;
+	private float quantityLimit;
+
+	@Column(name="sell_price")
+	private double sellPrice;
 
 	private String unit;
 
@@ -62,6 +66,14 @@ public class Product implements Serializable {
 
 	public void setProductId(int productId) {
 		this.productId = productId;
+	}
+
+	public double getBuyPrice() {
+		return this.buyPrice;
+	}
+
+	public void setBuyPrice(double buyPrice) {
+		this.buyPrice = buyPrice;
 	}
 
 	public int getCreatedBy() {
@@ -104,14 +116,6 @@ public class Product implements Serializable {
 		this.modifiedBy = modifiedBy;
 	}
 
-	public double getPrice() {
-		return this.price;
-	}
-
-	public void setPrice(double price) {
-		this.price = price;
-	}
-
 	public String getProductCode() {
 		return this.productCode;
 	}
@@ -128,20 +132,28 @@ public class Product implements Serializable {
 		this.productName = productName;
 	}
 
-	public int getQuantity() {
+	public float getQuantity() {
 		return this.quantity;
 	}
 
-	public void setQuantity(int quantity) {
+	public void setQuantity(float quantity) {
 		this.quantity = quantity;
 	}
 
-	public int getQuantityLimit() {
+	public float getQuantityLimit() {
 		return this.quantityLimit;
 	}
 
-	public void setQuantityLimit(int quantityLimit) {
+	public void setQuantityLimit(float quantityLimit) {
 		this.quantityLimit = quantityLimit;
+	}
+
+	public double getSellPrice() {
+		return this.sellPrice;
+	}
+
+	public void setSellPrice(double sellPrice) {
+		this.sellPrice = sellPrice;
 	}
 
 	public String getUnit() {

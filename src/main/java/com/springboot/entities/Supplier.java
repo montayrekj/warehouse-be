@@ -32,12 +32,16 @@ public class Supplier implements Serializable {
 	@Column(name="modified_by")
 	private int modifiedBy;
 
+	@Lob
+	@Column(name="supplier_address")
+	private String supplierAddress;
+
 	@Column(name="supplier_name")
 	private String supplierName;
 
-	//bi-directional many-to-one association to Product
-	@OneToMany(mappedBy="supplierBean")
-	private List<Product> products;
+	@Lob
+	@Column(name="supplier_number")
+	private String supplierNumber;
 
 	public Supplier() {
 	}
@@ -82,6 +86,14 @@ public class Supplier implements Serializable {
 		this.modifiedBy = modifiedBy;
 	}
 
+	public String getSupplierAddress() {
+		return this.supplierAddress;
+	}
+
+	public void setSupplierAddress(String supplierAddress) {
+		this.supplierAddress = supplierAddress;
+	}
+
 	public String getSupplierName() {
 		return this.supplierName;
 	}
@@ -90,26 +102,12 @@ public class Supplier implements Serializable {
 		this.supplierName = supplierName;
 	}
 
-	public List<Product> getProducts() {
-		return this.products;
+	public String getSupplierNumber() {
+		return this.supplierNumber;
 	}
 
-	public void setProducts(List<Product> products) {
-		this.products = products;
-	}
-
-	public Product addProduct(Product product) {
-		getProducts().add(product);
-		product.setSupplierBean(this);
-
-		return product;
-	}
-
-	public Product removeProduct(Product product) {
-		getProducts().remove(product);
-		product.setSupplierBean(null);
-
-		return product;
+	public void setSupplierNumber(String supplierNumber) {
+		this.supplierNumber = supplierNumber;
 	}
 
 }

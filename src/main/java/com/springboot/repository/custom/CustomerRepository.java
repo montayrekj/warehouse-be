@@ -1,0 +1,40 @@
+package com.springboot.repository.custom;
+
+import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+import javax.transaction.Transactional;
+
+import org.springframework.stereotype.Repository;
+
+import com.springboot.entities.Customer;
+
+@Repository("customerRepository")
+public class CustomerRepository {
+	public Customer getCustomerByName(EntityManager em, String name) {
+		Customer customer = null;
+
+		StringBuilder customerQuery = new StringBuilder("FROM Customer WHERE customerName = :name");
+		TypedQuery<Customer> query = em.createQuery(customerQuery.toString(), Customer.class);
+		query.setParameter("name", name);
+		customer = query.getSingleResult();
+
+		return customer;
+	}
+
+	public List<Customer> getAllCustomers(EntityManager em) {
+		List<Customer> customers = null;
+
+		StringBuilder customerQuery = new StringBuilder("FROM Customer");
+		TypedQuery<Customer> query = em.createQuery(customerQuery.toString(), Customer.class);
+		customers = query.getResultList();
+
+		return customers;
+	}
+	
+	@Transactional
+	public void addCustomer(EntityManager em, Customer customer) {
+		em.persist(customer);
+	}
+}

@@ -13,21 +13,27 @@ public class ProductModel implements Serializable{
 
 	private Timestamp dateModified;
 
-	private String modifiedBy;;*/
+	;*/
 	
-	private double price;
+	private double sellPrice;
+	
+	private double buyPrice;
 
 	private String productCode;
 
 	private String productName;
 
-	private int quantity;
+	private float quantity;
 
-	private int quantityLimit;
+	private float quantityLimit;
 
 	private String unit;
 	
 	private String supplier;
+	
+	private int createdBy;
+	
+	private int modifiedBy;
 
 	public int getProductId() {
 		return productId;
@@ -35,14 +41,6 @@ public class ProductModel implements Serializable{
 
 	public void setProductId(int productId) {
 		this.productId = productId;
-	}
-
-	public double getPrice() {
-		return price;
-	}
-
-	public void setPrice(double price) {
-		this.price = price;
 	}
 
 	public String getProductCode() {
@@ -53,6 +51,22 @@ public class ProductModel implements Serializable{
 		this.productCode = productCode;
 	}
 
+	public double getSellPrice() {
+		return sellPrice;
+	}
+
+	public void setSellPrice(double sellPrice) {
+		this.sellPrice = sellPrice;
+	}
+
+	public double getBuyPrice() {
+		return buyPrice;
+	}
+
+	public void setBuyPrice(double buyPrice) {
+		this.buyPrice = buyPrice;
+	}
+
 	public String getProductName() {
 		return productName;
 	}
@@ -61,19 +75,19 @@ public class ProductModel implements Serializable{
 		this.productName = productName;
 	}
 
-	public int getQuantity() {
+	public float getQuantity() {
 		return quantity;
 	}
 
-	public void setQuantity(int quantity) {
+	public void setQuantity(float quantity) {
 		this.quantity = quantity;
 	}
 
-	public int getQuantityLimit() {
+	public float getQuantityLimit() {
 		return quantityLimit;
 	}
 
-	public void setQuantityLimit(int quantityLimit) {
+	public void setQuantityLimit(float quantityLimit) {
 		this.quantityLimit = quantityLimit;
 	}
 
@@ -91,6 +105,22 @@ public class ProductModel implements Serializable{
 
 	public void setSupplier(String supplier) {
 		this.supplier = supplier;
+	}
+
+	public int getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(int createdBy) {
+		this.createdBy = createdBy;
+	}
+
+	public int getModifiedBy() {
+		return modifiedBy;
+	}
+
+	public void setModifiedBy(int modifiedBy) {
+		this.modifiedBy = modifiedBy;
 	}
 	
 	/*public String getCreatedBy() {

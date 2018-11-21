@@ -88,20 +88,21 @@ public class ProductRepository {
 			productExist.setProductCode(productM.getProductCode());
 			productExist.setQuantity(productM.getQuantity());
 			productExist.setUnit(productM.getUnit());
-			productExist.setPrice(productM.getPrice());
+			productExist.setBuyPrice(productM.getBuyPrice());
+			productExist.setSellPrice(productM.getSellPrice());
 			productExist.setQuantityLimit(productM.getQuantityLimit());
 			productExist.setSupplierBean(supplierRepo.getSupplierByName(em, productM.getSupplier()));
 			
 			//Tempo values
-			productExist.setCreatedBy(1);
-			productExist.setModifiedBy(1);
+			productExist.setModifiedBy(productM.getCreatedBy());
+			productExist.setDateModified(new Timestamp(System.currentTimeMillis()));
 		} else {
 			throw new Exception("Product doesn't exist!");
 		}
 	}
 	
 	@Transactional
-	public void deleteProduct(EntityManager em, int productId) throws Exception{
+	public void deleteProduct(EntityManager em, int productId, int userId) throws Exception{
 		Product productExist; 
 		
 		try {
@@ -112,13 +113,15 @@ public class ProductRepository {
 		
 		if(productExist != null) {
 			productExist.setDeleted(true);
+			productExist.setModifiedBy(userId);
+			productExist.setDateModified(new Timestamp(System.currentTimeMillis()));
 		} else {
 			throw new Exception("Product doesn't exist!");
 		}
 	}
 	
 	@Transactional
-	public void addStocks(EntityManager em, ProductModel productM) throws Exception{
+	public void addStocks(EntityManager em, ProductModel productM, int modifiedBy) throws Exception{
 		Product productExist; 
 		
 		try {
@@ -128,10 +131,35 @@ public class ProductRepository {
 		}
 		
 		if(productExist != null) {
-			productExist.setQuantity(productM.getQuantity());
+			productExist.setQuantity(productExist.getQuantity() + productM.getQuantity());
+			productExist.setModifiedBy(modifiedBy);
 			productExist.setDateModified(new Timestamp(System.currentTimeMillis()));
 		} else {
 			throw new Exception("Product doesn't exist!");
 		}
+	}
+	
+	@Transactional
+	public void removeStocks(EntityManager em, ProductModel productM, int modifiedBy) throws Exception{
+		Product productExist; 
+		
+		try {
+			productExist = getProductById(em, productM.getProductId());
+		} catch(NoResultException nre) {
+			productExist = null;
+		}
+		
+		if(productExist != null) {
+			productExist.setQuantity(productExist.getQuantity() - productM.getQuantity());
+			productExist.setModifiedBy(modifiedBy);
+			productExist.setDateModified(new Timestamp(System.currentTimeMillis()));
+		} else {
+			throw new Exception("Product doesn't exist!");
+		}
+	}
+	
+	@Transactional
+	public void confirmCheckerOrder(Product product, float quantityOut) {
+		product.setQuantity(product.getQuantity() - quantityOut);
 	}
 }

@@ -26,13 +26,15 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 
-		<!-- Web with Tomcat + Embed >
+		<!--Web with Tomcat + Embed -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-tomcat</artifactId>
 			<scope>provided</scope>
-		</dependency-->
-		<dependency>
+		</dependency>
+		
+		<!-- For appengine -->
+		<!--dependency>
 	      <groupId>org.springframework.boot</groupId>
 	      <artifactId>spring-boot-starter-web</artifactId>
 	      <exclusions>
@@ -41,14 +43,15 @@
 	          <artifactId>spring-boot-starter-tomcat</artifactId>
 	        </exclusion>
 	      </exclusions>
-	    </dependency>
+	    </dependency-->
 
 		<!-- JSTL -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>jstl</artifactId>
 		</dependency>
-
+		
+		<!-- For app engine -->
 		<!-- Need this to compile JSP >
 		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
@@ -56,12 +59,13 @@
 			<scope>provided</scope>
 		</dependency -->
 		
-		<dependency>
+		<!-- For app engine -->
+		<!--dependency>
 	      <groupId>javax.servlet</groupId>
 	      <artifactId>javax.servlet-api</artifactId>
 	      <version>3.1.0</version>
 	      <scope>provided</scope>
-	    </dependency>
+	    </dependency-->
 
 		<!-- Need this to compile JSP -->
 		<dependency>
@@ -101,11 +105,12 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 			
-			<plugin>
+			<!-- For appengine -->
+			<!--plugin>
 	        	<groupId>com.google.appengine</groupId>
 	        	<artifactId>appengine-maven-plugin</artifactId>
 	        	<version>1.9.60</version>
-	      	</plugin>
+	      	</plugin-->
 		</plugins>
 	</build>
 </project>
