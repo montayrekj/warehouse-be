@@ -40,6 +40,9 @@ public class PurchasesLogsItem implements Serializable {
 
 	@Column(name="purchases_logs_id")
 	private int purchasesLogsId;
+	
+	@Column(name="product_id")
+	private int productId;
 
 	public PurchasesLogsItem() {
 	}
@@ -114,6 +117,14 @@ public class PurchasesLogsItem implements Serializable {
 
 	public void setPurchasesLogId(int purchasesLogsId) {
 		this.purchasesLogsId = purchasesLogsId;
+	}
+
+	public int getProductId() {
+		return productId;
+	}
+
+	public void setProductId(int productId) {
+		this.productId = productId;
 	}
 
 }

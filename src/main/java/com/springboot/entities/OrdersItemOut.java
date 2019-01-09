@@ -13,19 +13,19 @@ import javax.persistence.Table;
 
 
 /**
- * The persistent class for the purchases_logs database table.
+ * The persistent class for the orders_item_out database table.
  * 
  */
 @Entity
-@Table(name="purchases_logs")
-@NamedQuery(name="PurchasesLog.findAll", query="SELECT p FROM PurchasesLog p")
-public class PurchasesLog implements Serializable {
+@Table(name="orders_item_out")
+@NamedQuery(name="OrdersItemOut.findAll", query="SELECT o FROM OrdersItemOut o")
+public class OrdersItemOut implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@Column(name="purchases_logs_id")
+	@Column(name="out_id")
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	private int purchasesLogsId;
+	private int outId;
 
 	@Column(name="created_by")
 	private int createdBy;
@@ -33,21 +33,21 @@ public class PurchasesLog implements Serializable {
 	@Column(name="created_date")
 	private Timestamp createdDate;
 
-	@Column(name="modified_by")
-	private int modifiedBy;
+	@Column(name="order_item_id")
+	private int orderItemId;
 
-	@Column(name="modified_date")
-	private Timestamp modifiedDate;
+	@Column(name="out_quantity")
+	private double outQuantity;
 
-	public PurchasesLog() {
+	public OrdersItemOut() {
 	}
 
-	public int getPurchasesLogsId() {
-		return this.purchasesLogsId;
+	public int getOutId() {
+		return this.outId;
 	}
 
-	public void setPurchasesLogsId(int purchasesLogsId) {
-		this.purchasesLogsId = purchasesLogsId;
+	public void setOutId(int outId) {
+		this.outId = outId;
 	}
 
 	public int getCreatedBy() {
@@ -66,20 +66,20 @@ public class PurchasesLog implements Serializable {
 		this.createdDate = createdDate;
 	}
 
-	public int getModifiedBy() {
-		return this.modifiedBy;
+	public int getOrderItemId() {
+		return this.orderItemId;
 	}
 
-	public void setModifiedBy(int modifiedBy) {
-		this.modifiedBy = modifiedBy;
+	public void setOrderItemId(int orderItemId) {
+		this.orderItemId = orderItemId;
 	}
 
-	public Timestamp getModifiedDate() {
-		return this.modifiedDate;
+	public double getOutQuantity() {
+		return this.outQuantity;
 	}
 
-	public void setModifiedDate(Timestamp modifiedDate) {
-		this.modifiedDate = modifiedDate;
+	public void setOutQuantity(double outQuantity) {
+		this.outQuantity = outQuantity;
 	}
 
 }

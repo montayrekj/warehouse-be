@@ -4,19 +4,21 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
-import com.springboot.entities.SalesLogsItem;
+import com.springboot.entities.OrdersItem;
 
-public class SalesLogsModel {
+public class OrderModel {
 	
-	private int salesLogsId;
+	private String orderId;
 
 	private String createdBy;
 
 	private Timestamp createdDate;
 	
-	private List<SalesLogsItem> salesLogsItem;
+	private List<OrdersItem> orderItems;
 	
 	private String customer;
+	
+	private int customerLevel;
 	
 	private double paidAmount;
 
@@ -30,12 +32,12 @@ public class SalesLogsModel {
 	
 	private Date termDueDate;
 
-	public int getSalesLogsId() {
-		return salesLogsId;
+	public String getOrderId() {
+		return orderId;
 	}
 
-	public void setSalesLogsId(int salesLogsId) {
-		this.salesLogsId = salesLogsId;
+	public void setOrderId(String orderId) {
+		this.orderId = orderId;
 	}
 
 	public String getCreatedBy() {
@@ -54,12 +56,12 @@ public class SalesLogsModel {
 		this.createdDate = createdDate;
 	}
 
-	public List<SalesLogsItem> getSalesLogsItem() {
-		return salesLogsItem;
+	public List<OrdersItem> getSalesLogsItem() {
+		return orderItems;
 	}
 
-	public void setSalesLogsItem(List<SalesLogsItem> salesLogsItem) {
-		this.salesLogsItem = salesLogsItem;
+	public void setSalesLogsItem(List<OrdersItem> salesLogsItem) {
+		this.orderItems = salesLogsItem;
 	}
 
 	public String getCustomer() {
@@ -116,5 +118,13 @@ public class SalesLogsModel {
 
 	public void setPurchaseOrderStatus(int purchaseOrderStatus) {
 		this.purchaseOrderStatus = purchaseOrderStatus;
+	}
+
+	public int getCustomerLevel() {
+		return customerLevel;
+	}
+
+	public void setCustomerLevel(int customerLevel) {
+		this.customerLevel = customerLevel;
 	}
 }

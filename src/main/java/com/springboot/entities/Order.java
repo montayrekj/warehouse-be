@@ -6,8 +6,6 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -18,15 +16,14 @@ import javax.persistence.Table;
  * 
  */
 @Entity
-@Table(name="sales_logs")
-@NamedQuery(name="SalesLog.findAll", query="SELECT s FROM SalesLog s")
-public class SalesLog implements Serializable {
+@Table(name="orders")
+@NamedQuery(name="Orders.findAll", query="SELECT o FROM Order o")
+public class Order implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@Column(name="sales_logs_id")
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	private int salesLogsId;
+	@Column(name="order_id")
+	private String orderId;
 
 	@Column(name="created_by")
 	private int createdBy;
@@ -46,7 +43,7 @@ public class SalesLog implements Serializable {
 	@Column(name="total_amount")
 	private double totalAmount;
 	
-	private String customer;
+	private int customer;
 	
 	@Column(name="cash_amount")
 	private double cashAmount;
@@ -62,15 +59,15 @@ public class SalesLog implements Serializable {
 	
 	private boolean collected;
 
-	public SalesLog() {
+	public Order() {
 	}
 
-	public int getSalesLogsId() {
-		return this.salesLogsId;
+	public String getOrderId() {
+		return this.orderId;
 	}
 
-	public void setSalesLogsId(int salesLogsId) {
-		this.salesLogsId = salesLogsId;
+	public void setOrderId(String orderId) {
+		this.orderId = orderId;
 	}
 
 	public int getCreatedBy() {
@@ -121,11 +118,11 @@ public class SalesLog implements Serializable {
 		this.totalAmount = totalAmount;
 	}
 
-	public String getCustomer() {
+	public int getCustomer() {
 		return customer;
 	}
 
-	public void setCustomer(String customer) {
+	public void setCustomer(int customer) {
 		this.customer = customer;
 	}
 

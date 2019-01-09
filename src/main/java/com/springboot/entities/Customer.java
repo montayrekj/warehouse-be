@@ -42,6 +42,12 @@ public class Customer implements Serializable {
 
 	@Column(name="modified_date")
 	private Timestamp modifiedDate;
+	
+	@Column(name="customer_contact_person")
+	private String customerContactPerson;
+	
+	@Column(name="customer_level")
+	private int customerLevel;
 
 	public Customer() {
 	}
@@ -108,6 +114,22 @@ public class Customer implements Serializable {
 
 	public void setModifiedDate(Timestamp modifiedDate) {
 		this.modifiedDate = modifiedDate;
+	}
+
+	public String getCustomerContactPerson() {
+		return customerContactPerson;
+	}
+
+	public void setCustomerContactPerson(String customerContactPerson) {
+		this.customerContactPerson = customerContactPerson;
+	}
+
+	public int getCustomerLevel() {
+		return customerLevel;
+	}
+
+	public void setCustomerLevel(int customerLevel) {
+		this.customerLevel = customerLevel;
 	}
 
 }

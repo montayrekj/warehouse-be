@@ -27,6 +27,10 @@ public class User implements Serializable {
 	private String password;
 
 	private String username;
+	
+	private String nickname;
+	
+	private String email;
 
 	private String usertype;
 
@@ -79,6 +83,22 @@ public class User implements Serializable {
 
 	public void setUsertype(String usertype) {
 		this.usertype = usertype;
+	}
+
+	public String getNickname() {
+		return nickname;
+	}
+
+	public void setNickname(String nickname) {
+		this.nickname = nickname;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 }

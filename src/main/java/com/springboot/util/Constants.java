@@ -23,4 +23,22 @@ public class Constants {
 	
 	/* Purchase Order Status Accounting Declined */
 	public static int PO_STATUS_ACCT_DECLINED = -2;
+	
+	/* Cash Sale Type */
+	public static String SALE_TYPE_CASH = "Cash";
+	
+	/* Term Sale Type */
+	public static String SALE_TYPE_TERM = "Term";
+	
+	/* User Type - Regional Manager */
+	public static int REGIONAL_MANAGER = 0;
+	
+	/* User Type - Accounting */
+	public static int ACCOUNTING = 1;
+	
+	/* User Type - Checker */
+	public static int CHECKER = 2;
+	
+	/* User Type - Admin */
+	public static int ADMIN = 3;
 }

@@ -1,5 +1,6 @@
 package com.springboot.repository.custom;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -24,6 +25,17 @@ public class SupplierRepository {
 		return supplier;
 	}
 	
+	public Supplier getSupplierById(EntityManager em, int id) {
+		Supplier supplier = null;
+		
+		StringBuilder supplierQuery = new StringBuilder("FROM Supplier WHERE supplierId = :id");
+		TypedQuery<Supplier> query = em.createQuery(supplierQuery.toString(), Supplier.class);
+		query.setParameter("id", id);
+		supplier = query.getSingleResult();
+
+		return supplier;
+	}
+	
 	public List<Supplier> getAllSuplier(EntityManager em) {
 		List<Supplier> suppliers = null;
 		
@@ -37,5 +49,22 @@ public class SupplierRepository {
 	@Transactional
 	public void addSupplier(EntityManager em, Supplier supplier) {
 		em.persist(supplier);
+	}
+	
+	@Transactional
+	public void addCustomer(EntityManager em, Customer customer) {
+		em.persist(customer);
+	}
+	
+	@Transactional
+	public void updateSupplier(EntityManager em, String supplierName, String supplierAddress, String supplierNumber, Integer supplierId, int id) {
+		Supplier supplierExist = getSupplierById(em, supplierId);
+		if(supplierExist != null) {
+			supplierExist.setSupplierName(supplierName);
+			supplierExist.setSupplierNumber(supplierNumber);
+			supplierExist.setSupplierAddress(supplierAddress);
+			supplierExist.setModifiedBy(id);
+			supplierExist.setDateModified(new Timestamp(System.currentTimeMillis()));
+		}
 	}
 }

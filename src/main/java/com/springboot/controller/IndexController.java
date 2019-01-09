@@ -1,6 +1,7 @@
 package com.springboot.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,25 +10,31 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.cors.CorsConfiguration;
 
 import com.springboot.entities.Customer;
+import com.springboot.entities.Order;
 import com.springboot.entities.Supplier;
 import com.springboot.entities.User;
+import com.springboot.model.OrderModel;
 import com.springboot.model.ProductModel;
 import com.springboot.model.PurchasesLogsModel;
 import com.springboot.model.ResponseModel;
-import com.springboot.model.SalesLogsModel;
+import com.springboot.model.SaleModel;
+import com.springboot.model.StocksModel;
 import com.springboot.service.CustomerService;
+import com.springboot.service.OrdersService;
 import com.springboot.service.ProductService;
 import com.springboot.service.PurchaseLogsService;
-import com.springboot.service.SalesLogsService;
+import com.springboot.service.SalesService;
 import com.springboot.service.SupplierService;
 import com.springboot.service.UserService;
 import com.springboot.util.Constants;
 import com.springboot.util.HashUtil;
+import com.springboot.util.MailSender;
 
 @CrossOrigin(
         origins = { "*" }, 
@@ -47,13 +54,16 @@ public class IndexController {
 	private PurchaseLogsService purchaseLogsService;
 	
 	@Autowired
-	private SalesLogsService salesLogService;
+	private OrdersService ordersService;
 	
 	@Autowired
 	private SupplierService supplierService;
 	
 	@Autowired
 	private CustomerService customerService;
+	
+	@Autowired
+	private SalesService salesService;
 	
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	@ResponseBody
@@ -68,6 +78,25 @@ public class IndexController {
 			e.printStackTrace();
 			responseModel.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
 			responseModel.setMessage("User doesn't Exist");
+		}
+		
+		return responseModel;
+	}
+	
+	@RequestMapping(value = "/getUsers", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseModel<List<User>> getUsers(String username, String password) {
+		ResponseModel<List<User>> responseModel = new ResponseModel<List<User>>();
+		List<User> users;
+		
+		try {
+			users = userService.getUsers();
+			responseModel.setData(users);
+			responseModel.setStatusCode(HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			responseModel.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+			responseModel.setMessage(e.getMessage());
 		}
 		
 		return responseModel;
@@ -97,6 +126,25 @@ public class IndexController {
 	
 	@RequestMapping(value = "/updateUser", method = RequestMethod.POST)
 	@ResponseBody
+	public ResponseModel<Boolean> updateUser(@RequestBody User user) {
+		ResponseModel<Boolean> responseModel = new ResponseModel<Boolean>();
+		
+		try {
+			userService.updateUser(user);
+			responseModel.setData(true);
+			responseModel.setStatusCode(HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			responseModel.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+			responseModel.setData(false);
+			responseModel.setMessage(e.getMessage());
+		}
+		
+		return responseModel;
+	}
+	
+	/*@RequestMapping(value = "/updateUserTemp", method = RequestMethod.POST)
+	@ResponseBody
 	public ResponseModel<User> deleteUser(String username, String password, String userType, boolean deleted, String accessToken) {
 		ResponseModel<User> responseModel = new ResponseModel<User>();
 		
@@ -115,7 +163,7 @@ public class IndexController {
 		}
 		
 		return responseModel;
-	}
+	}*/
 	
 	@RequestMapping(value = "/getSuppliers", method = RequestMethod.POST)
 	@ResponseBody
@@ -155,6 +203,44 @@ public class IndexController {
 		return responseModel;
 	}
 	
+	@RequestMapping(value = "/getSupplierById", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseModel<Supplier> getSupplierById(Integer id) {
+		ResponseModel<Supplier> responseModel = new ResponseModel<Supplier>();
+		Supplier supplier;
+		
+		try {
+			supplier = supplierService.getSupplierById(id);
+			responseModel.setData(supplier);
+			responseModel.setStatusCode(HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			responseModel.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+			responseModel.setMessage(e.getMessage());
+		}
+		
+		return responseModel;
+	}
+	
+	@RequestMapping(value = "/updateSupplier", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseModel<Boolean> updateSupplier(String supplierName, String supplierAddress, String supplierNumber, Integer supplierId, Integer id) {
+		ResponseModel<Boolean> responseModel = new ResponseModel<Boolean>();
+		
+		try {
+			supplierService.updateSupplier(supplierName, supplierAddress, supplierNumber, supplierId, id);
+			responseModel.setData(true);
+			responseModel.setStatusCode(HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			responseModel.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+			responseModel.setData(false);
+			responseModel.setMessage(e.getMessage());
+		}
+		
+		return responseModel;
+	}
+	
 	@RequestMapping(value = "/getCustomers", method = RequestMethod.POST)
 	@ResponseBody
 	public ResponseModel<List<Customer>> getAllCustomers() {
@@ -176,11 +262,49 @@ public class IndexController {
 	
 	@RequestMapping(value = "/addCustomer", method = RequestMethod.POST)
 	@ResponseBody
-	public ResponseModel<Boolean> addCustomer(String customerName, String customerAddress, String customerContactNo, Integer userId) {
+	public ResponseModel<Boolean> addCustomer(String customerName, String customerAddress, String customerContactNo, String customerContactPerson, Integer customerLevel, Integer userId) {
 		ResponseModel<Boolean> responseModel = new ResponseModel<Boolean>();
 		
 		try {
-			customerService.addCustomer(customerName, customerAddress, customerContactNo, userId);
+			customerService.addCustomer(customerName, customerAddress, customerContactNo, customerContactPerson, customerLevel, userId);
+			responseModel.setData(true);
+			responseModel.setStatusCode(HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			responseModel.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+			responseModel.setData(false);
+			responseModel.setMessage(e.getMessage());
+		}
+		
+		return responseModel;
+	}
+	
+	@RequestMapping(value = "/getCustomerById", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseModel<Customer> getCustomerById(Integer id) {
+		ResponseModel<Customer> responseModel = new ResponseModel<Customer>();
+		Customer customer;
+		
+		try {
+			customer = customerService.getCustomerById(id);
+			responseModel.setData(customer);
+			responseModel.setStatusCode(HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			responseModel.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+			responseModel.setMessage(e.getMessage());
+		}
+		
+		return responseModel;
+	}
+	
+	@RequestMapping(value = "/updateCustomer", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseModel<Boolean> updateCustomer(String customerName, String customerAddress, String customerNumber, Integer customerId, String customerContactPerson, Integer customerLevel, Integer id) {
+		ResponseModel<Boolean> responseModel = new ResponseModel<Boolean>();
+		
+		try {
+			customerService.updateCustomer(customerName, customerAddress, customerNumber, customerId, customerContactPerson, customerLevel,  id);
 			responseModel.setData(true);
 			responseModel.setStatusCode(HttpStatus.OK);
 		} catch (Exception e) {
@@ -201,6 +325,25 @@ public class IndexController {
 		
 		try {
 			products = productService.getAllProducts();
+			responseModel.setData(products);
+			responseModel.setStatusCode(HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			responseModel.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+			responseModel.setMessage(e.getMessage());
+		}
+		
+		return responseModel;
+	}
+	
+	@RequestMapping(value = "/getProducts", method = RequestMethod.GET)
+	@ResponseBody
+	public ResponseModel<List<ProductModel>> getProductsSearch(@RequestParam Map<String, String> queryMap) {
+		ResponseModel<List<ProductModel>> responseModel = new ResponseModel<List<ProductModel>>();
+		List<ProductModel> products;
+		
+		try {
+			products = productService.getAllProducts(queryMap);
 			responseModel.setData(products);
 			responseModel.setStatusCode(HttpStatus.OK);
 		} catch (Exception e) {
@@ -328,17 +471,18 @@ public class IndexController {
 	
 	@RequestMapping(value = "/removeStocks/{customerName}", method = RequestMethod.POST)
 	@ResponseBody
-	public ResponseModel<Boolean> removeStocks(@RequestBody List<ProductModel> products, @PathVariable String customerName) {
-		ResponseModel<Boolean> responseModel = new ResponseModel<Boolean>();
+	public ResponseModel<Order> removeStocks(@RequestBody List<ProductModel> products, @PathVariable String customerName) {
+		ResponseModel<Order> responseModel = new ResponseModel<Order>();
+		Order order = null;
 		
 		try {
-			productService.removeStocks(products, customerName);
-			responseModel.setData(true);
+			order = productService.removeStocks(products, customerName);
+			responseModel.setData(order);
 			responseModel.setStatusCode(HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
 			responseModel.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
-			responseModel.setData(false);
+			responseModel.setData(order);
 			responseModel.setMessage(e.getMessage());
 		}
 		
@@ -353,6 +497,25 @@ public class IndexController {
 		
 		try {
 			purchasesLogs = purchaseLogsService.getPurchasesLogs();
+			responseModel.setData(purchasesLogs);
+			responseModel.setStatusCode(HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			responseModel.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+			responseModel.setMessage(e.getMessage());
+		}
+		
+		return responseModel;
+	}
+	
+	@RequestMapping(value = "/getPurchasesLogs", method = RequestMethod.GET)
+	@ResponseBody
+	public ResponseModel<List<PurchasesLogsModel>> getPurchasesLogsSearch(@RequestParam Map<String, String> queryMap) {
+		ResponseModel<List<PurchasesLogsModel>> responseModel = new ResponseModel<List<PurchasesLogsModel>>();
+		List<PurchasesLogsModel> purchasesLogs;
+		
+		try {
+			purchasesLogs = purchaseLogsService.getPurchasesLogs(queryMap);
 			responseModel.setData(purchasesLogs);
 			responseModel.setStatusCode(HttpStatus.OK);
 		} catch (Exception e) {
@@ -383,15 +546,54 @@ public class IndexController {
 		return responseModel;
 	}
 	
-	@RequestMapping(value = "/getSalesLogs", method = RequestMethod.POST)
+	@RequestMapping(value = "/getOrders", method = RequestMethod.POST)
 	@ResponseBody
-	public ResponseModel<List<SalesLogsModel>> getSalesLogs() {
-		ResponseModel<List<SalesLogsModel>> responseModel = new ResponseModel<List<SalesLogsModel>>();
-		List<SalesLogsModel> salesLogs;
+	public ResponseModel<List<OrderModel>> getOrders() {
+		ResponseModel<List<OrderModel>> responseModel = new ResponseModel<List<OrderModel>>();
+		List<OrderModel> orders;
 		
 		try {
-			salesLogs = salesLogService.getSalesLogs();
-			responseModel.setData(salesLogs);
+			orders = ordersService.getOrders();
+			responseModel.setData(orders);
+			responseModel.setStatusCode(HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			responseModel.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+			responseModel.setMessage(e.getMessage());
+		}
+		
+		return responseModel;
+	}
+	
+	@RequestMapping(value = "/getActiveOrders", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseModel<List<OrderModel>> getActiveOrders(Boolean active) {
+		ResponseModel<List<OrderModel>> responseModel = new ResponseModel<List<OrderModel>>();
+		List<OrderModel> orders;
+		
+		try {
+			orders = ordersService.getActiveOrders(active);
+			responseModel.setData(orders);
+			responseModel.setStatusCode(HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			responseModel.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+			responseModel.setMessage(e.getMessage());
+		}
+		
+		return responseModel;
+	}
+	
+	@RequestMapping(value = "/getActiveOrders", method = RequestMethod.GET)
+	@ResponseBody
+	public ResponseModel<List<OrderModel>> getActiveOrdersSearch(@RequestParam Map<String, String> queryMap) {
+		ResponseModel<List<OrderModel>> responseModel = new ResponseModel<List<OrderModel>>();
+		List<OrderModel> orders;
+		
+		try {
+			Boolean active = Boolean.parseBoolean(queryMap.get("active"));
+			orders = ordersService.getActiveOrders(active, queryMap);
+			responseModel.setData(orders);
 			responseModel.setStatusCode(HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -404,11 +606,11 @@ public class IndexController {
 	
 	@RequestMapping(value = "/collect", method = RequestMethod.POST)
 	@ResponseBody
-	public ResponseModel<Boolean> collect(Integer salesLogsId) {
+	public ResponseModel<Boolean> collect(String orderId, Integer userId) {
 		ResponseModel<Boolean> responseModel = new ResponseModel<Boolean>();
 		
 		try {
-			salesLogService.collect(salesLogsId);
+			ordersService.collect(orderId, userId);
 			responseModel.setData(true);
 			responseModel.setStatusCode(HttpStatus.OK);
 		} catch (Exception e) {
@@ -423,13 +625,13 @@ public class IndexController {
 	
 	@RequestMapping(value = "/getCollections", method = RequestMethod.POST)
 	@ResponseBody
-	public ResponseModel<List<SalesLogsModel>> getCollections() {
-		ResponseModel<List<SalesLogsModel>> responseModel = new ResponseModel<List<SalesLogsModel>>();
-		List<SalesLogsModel> salesLogs;
+	public ResponseModel<List<OrderModel>> getCollections() {
+		ResponseModel<List<OrderModel>> responseModel = new ResponseModel<List<OrderModel>>();
+		List<OrderModel> orders;
 		
 		try {
-			salesLogs = salesLogService.getCollections();
-			responseModel.setData(salesLogs);
+			orders = ordersService.getCollections();
+			responseModel.setData(orders);
 			responseModel.setStatusCode(HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -440,15 +642,34 @@ public class IndexController {
 		return responseModel;
 	}
 	
-	@RequestMapping(value = "/getSalesLogsById", method = RequestMethod.POST)
+	@RequestMapping(value = "/getCollections", method = RequestMethod.GET)
 	@ResponseBody
-	public ResponseModel<SalesLogsModel> getSalesLogsById(Integer id) {
-		ResponseModel<SalesLogsModel> responseModel = new ResponseModel<SalesLogsModel>();
-		SalesLogsModel salesLog;
+	public ResponseModel<List<OrderModel>> getCollectionsSearch(@RequestParam Map<String, String> queryMap) {
+		ResponseModel<List<OrderModel>> responseModel = new ResponseModel<List<OrderModel>>();
+		List<OrderModel> orders;
 		
 		try {
-			salesLog = salesLogService.getSalesLogsById(id);
-			responseModel.setData(salesLog);
+			orders = ordersService.getCollections(queryMap);
+			responseModel.setData(orders);
+			responseModel.setStatusCode(HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			responseModel.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+			responseModel.setMessage(e.getMessage());
+		}
+		
+		return responseModel;
+	}
+	
+	@RequestMapping(value = "/getOrderById", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseModel<OrderModel> getOrderById(String id) {
+		ResponseModel<OrderModel> responseModel = new ResponseModel<OrderModel>();
+		OrderModel order;
+		
+		try {
+			order = ordersService.getOrdersById(id);
+			responseModel.setData(order);
 			responseModel.setStatusCode(HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -461,11 +682,11 @@ public class IndexController {
 	
 	@RequestMapping(value = "/regionalManagerApproved", method = RequestMethod.POST)
 	@ResponseBody
-	public ResponseModel<Boolean> regionalManagerApproved(Integer salesLogsId, boolean approved) {
+	public ResponseModel<Boolean> regionalManagerApproved(String orderId, boolean approved) {
 		ResponseModel<Boolean> responseModel = new ResponseModel<Boolean>();
 		
 		try {
-			salesLogService.regionalManagerApproved(salesLogsId, approved);
+			ordersService.regionalManagerApproved(orderId, approved);
 			responseModel.setData(true);
 			responseModel.setStatusCode(HttpStatus.OK);
 		} catch (Exception e) {
@@ -480,12 +701,12 @@ public class IndexController {
 	
 	@RequestMapping(value = "/accountingApproved", method = RequestMethod.POST)
 	@ResponseBody
-	public ResponseModel<Boolean> accountingApproved(Integer salesLogsId, boolean approved, double cashAmount, 
-			double termAmount, String termDueDate) {
+	public ResponseModel<Boolean> accountingApproved(String orderId, boolean approved, double cashAmount, 
+			double termAmount, String termDueDate, Integer userId) {
 		ResponseModel<Boolean> responseModel = new ResponseModel<Boolean>();
 		
 		try {
-			salesLogService.accountingApproved(salesLogsId, approved, cashAmount, termAmount, termDueDate);
+			ordersService.accountingApproved(orderId, approved, cashAmount, termAmount, termDueDate, userId);
 			responseModel.setData(true);
 			responseModel.setStatusCode(HttpStatus.OK);
 		} catch (Exception e) {
@@ -498,19 +719,290 @@ public class IndexController {
 		return responseModel;
 	}
 	
-	@RequestMapping(value = "/checkerConfirmOrder", method = RequestMethod.POST)
+	@RequestMapping(value = "/confirmQuantity", method = RequestMethod.POST)
 	@ResponseBody
-	public ResponseModel<Boolean> checkerConfirmOrder(@RequestBody SalesLogsModel salesLogsModel) {
+	public ResponseModel<List<String>> confirmQuantity(@RequestBody OrderModel orderModel) {
+		ResponseModel<List<String>> responseModel = new ResponseModel<List<String>>();
+		List<String> insufficientStocks = null;
+		try {
+			insufficientStocks = productService.confirmQuantity(orderModel);
+			responseModel.setData(insufficientStocks);
+			responseModel.setStatusCode(HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			responseModel.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+			responseModel.setData(insufficientStocks);
+			responseModel.setMessage(e.getMessage());
+		}
+		
+		return responseModel;
+	}
+	
+	@RequestMapping(value = "/checkerConfirmOrder/{userId}", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseModel<Boolean> checkerConfirmOrder(@RequestBody OrderModel orderModel, @PathVariable Integer userId) {
 		ResponseModel<Boolean> responseModel = new ResponseModel<Boolean>();
 		
 		try {
-			salesLogService.checkerConfirmOrder(salesLogsModel);
+			ordersService.checkerConfirmOrder(orderModel, userId);
 			responseModel.setData(true);
 			responseModel.setStatusCode(HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
 			responseModel.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
 			responseModel.setData(false);
+			responseModel.setMessage(e.getMessage());
+		}
+		
+		return responseModel;
+	}
+	
+	@RequestMapping(value = "/emailRegionalManager", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseModel<Boolean> emailRegionalManager(String orderId) {
+		ResponseModel<Boolean> responseModel = new ResponseModel<Boolean>();
+		
+		try {
+			List<User> regionalManager = userService.getRegionalManager();
+			OrderModel order = ordersService.getOrdersById(orderId);
+			MailSender.emailRegionalManager(regionalManager, order);
+			responseModel.setData(true);
+			responseModel.setStatusCode(HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			responseModel.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+			responseModel.setMessage(e.getMessage());
+		}
+		
+		return responseModel;
+	}
+	
+	@RequestMapping(value = "/emailAccounting", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseModel<Boolean> emailAccounting(String orderId) {
+		ResponseModel<Boolean> responseModel = new ResponseModel<Boolean>();
+		
+		try {
+			List<User> accounting = userService.getAccounting();
+			OrderModel order = ordersService.getOrdersById(orderId);
+			MailSender.emailAccounting(accounting, order);
+			responseModel.setData(true);
+			responseModel.setStatusCode(HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			responseModel.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+			responseModel.setMessage(e.getMessage());
+		}
+		
+		return responseModel;
+	}
+	
+	@RequestMapping(value = "/emailChecker", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseModel<Boolean> emailChecker(String orderId) {
+		ResponseModel<Boolean> responseModel = new ResponseModel<Boolean>();
+		
+		try {
+			List<User> checker = userService.getChecker();
+			OrderModel order = ordersService.getOrdersById(orderId);
+			MailSender.emailChecker(checker, order);
+			responseModel.setData(true);
+			responseModel.setStatusCode(HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			responseModel.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+			responseModel.setMessage(e.getMessage());
+		}
+		
+		return responseModel;
+	}
+	
+	@RequestMapping(value = "/sendGatePass", method = RequestMethod.POST, produces = "text/plain;charset=UTF-8")
+	@ResponseBody
+	public ResponseModel<Boolean> sendGatePass(Integer userId, String orderId, String file) {
+		ResponseModel<Boolean> responseModel = new ResponseModel<Boolean>();
+		
+		try {
+			//Buffer buff = new com.mysql.jdbc.Buffer(file.getBytes());
+			User user = userService.getUserById(userId);
+			OrderModel order = ordersService.getOrdersById(orderId);
+			MailSender.emailGatePass(user, file, order);
+			responseModel.setData(true);
+			responseModel.setStatusCode(HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			responseModel.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+			responseModel.setMessage(e.getMessage());
+		}
+		
+		return responseModel;
+	}
+	
+	@RequestMapping(value = "/getSales", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseModel<List<SaleModel>> getSales() {
+		ResponseModel<List<SaleModel>> responseModel = new ResponseModel<List<SaleModel>>();
+		List<SaleModel> sales;
+		
+		try {
+			sales = salesService.getSales();
+			responseModel.setData(sales);
+			responseModel.setStatusCode(HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			responseModel.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+			responseModel.setMessage(e.getMessage());
+		}
+		
+		return responseModel;
+	}
+	
+	@RequestMapping(value = "/getSales", method = RequestMethod.GET)
+	@ResponseBody
+	public ResponseModel<List<SaleModel>> getSalesSearch(@RequestParam Map<String, String> queryMap) {
+		ResponseModel<List<SaleModel>> responseModel = new ResponseModel<List<SaleModel>>();
+		List<SaleModel> sales;
+		
+		try {
+			sales = salesService.getSales(queryMap);
+			responseModel.setData(sales);
+			responseModel.setStatusCode(HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			responseModel.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+			responseModel.setMessage(e.getMessage());
+		}
+		
+		return responseModel;
+	}
+	
+	@RequestMapping(value = "/dailySales", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseModel<Double> dailySales() {
+		ResponseModel<Double> responseModel = new ResponseModel<Double>();
+		Double sales;
+		
+		try {
+			sales = salesService.getDailySales();
+			responseModel.setData(sales);
+			responseModel.setStatusCode(HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			responseModel.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+			responseModel.setMessage(e.getMessage());
+		}
+		
+		return responseModel;
+	}
+	
+	@RequestMapping(value = "/dailySalesChart", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseModel<List<Double>> dailySalesChart() {
+		ResponseModel<List<Double>> responseModel = new ResponseModel<List<Double>>();
+		List<Double> sales;
+		
+		try {
+			sales = salesService.getDailySalesChart();
+			responseModel.setData(sales);
+			responseModel.setStatusCode(HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			responseModel.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+			responseModel.setMessage(e.getMessage());
+		}
+		
+		return responseModel;
+	}
+	
+	@RequestMapping(value = "/weeklySales", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseModel<Double> weeklySales() {
+		ResponseModel<Double> responseModel = new ResponseModel<Double>();
+		Double sales;
+		
+		try {
+			sales = salesService.getWeeklySales();
+			responseModel.setData(sales);
+			responseModel.setStatusCode(HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			responseModel.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+			responseModel.setMessage(e.getMessage());
+		}
+		
+		return responseModel;
+	}
+	
+	@RequestMapping(value = "/monthlySales", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseModel<Double> monthlySales() {
+		ResponseModel<Double> responseModel = new ResponseModel<Double>();
+		Double sales;
+		
+		try {
+			sales = salesService.getMonthlySales();
+			responseModel.setData(sales);
+			responseModel.setStatusCode(HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			responseModel.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+			responseModel.setMessage(e.getMessage());
+		}
+		
+		return responseModel;
+	}
+	
+	@RequestMapping(value = "/monthlySalesChart", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseModel<List<Double>> monthlySalesChart() {
+		ResponseModel<List<Double>> responseModel = new ResponseModel<List<Double>>();
+		List<Double> sales;
+		
+		try {
+			sales = salesService.getMonthlySalesChart();
+			responseModel.setData(sales);
+			responseModel.setStatusCode(HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			responseModel.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+			responseModel.setMessage(e.getMessage());
+		}
+		
+		return responseModel;
+	}
+	
+	@RequestMapping(value = "/getStocks", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseModel<List<StocksModel>> getStocks() {
+		ResponseModel<List<StocksModel>> responseModel = new ResponseModel<List<StocksModel>>();
+		List<StocksModel> stocks;
+		
+		try {
+			stocks = productService.getStocks();
+			responseModel.setData(stocks);
+			responseModel.setStatusCode(HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			responseModel.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+			responseModel.setMessage(e.getMessage());
+		}
+		
+		return responseModel;
+	}
+	
+	@RequestMapping(value = "/getStocks", method = RequestMethod.GET)
+	@ResponseBody
+	public ResponseModel<List<StocksModel>> getStocksSearch(@RequestParam Map<String, String> queryMap) {
+		ResponseModel<List<StocksModel>> responseModel = new ResponseModel<List<StocksModel>>();
+		List<StocksModel> stocks;
+		
+		try {
+			stocks = productService.getStocks(queryMap);
+			responseModel.setData(stocks);
+			responseModel.setStatusCode(HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			responseModel.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
 			responseModel.setMessage(e.getMessage());
 		}
 		

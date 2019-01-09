@@ -9,9 +9,9 @@ import javax.persistence.*;
  * 
  */
 @Entity
-@Table(name="sales_logs_item")
-@NamedQuery(name="SalesLogsItem.findAll", query="SELECT s FROM SalesLogsItem s")
-public class SalesLogsItem implements Serializable {
+@Table(name="orders_item")
+@NamedQuery(name="OrdersItem.findAll", query="SELECT o FROM OrdersItem o")
+public class OrdersItem implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -41,13 +41,13 @@ public class SalesLogsItem implements Serializable {
 
 	private String unit;
 
-	@Column(name="sales_logs_id")
-	private int salesLogsId;
+	@Column(name="order_id")
+	private String orderId;
 	
 	@Column(name="product_id")
 	private int productId;
 
-	public SalesLogsItem() {
+	public OrdersItem() {
 	}
 
 	public int getItemId() {
@@ -114,12 +114,12 @@ public class SalesLogsItem implements Serializable {
 		this.unit = unit;
 	}
 
-	public int getSalesLogsId() {
-		return salesLogsId;
+	public String getOrderId() {
+		return orderId;
 	}
 
-	public void setSalesLogsId(int salesLogsId) {
-		this.salesLogsId = salesLogsId;
+	public void setOrderId(String orderId) {
+		this.orderId = orderId;
 	}
 
 	public float getQuantityLeft() {

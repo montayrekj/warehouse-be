@@ -1,8 +1,9 @@
 package com.springboot.repository.custom;
 
 import java.sql.Timestamp;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.springboot.entities.Product;
+import com.springboot.entities.Supplier;
 import com.springboot.model.ProductModel;
 
 @Repository("productRepository")
@@ -27,6 +29,41 @@ public class ProductRepository {
 		StringBuilder productsQuery = new StringBuilder("FROM Product WHERE deleted = false");
 		TypedQuery<Product> query = em.createQuery(productsQuery.toString(), Product.class);
 		products = query.getResultList();
+
+		return products;
+	}
+	
+	public List<Product> getAllProducts(EntityManager em, Map<String, String> searchMap) {
+		List<Product> products = null;
+
+		StringBuilder productsQuery = new StringBuilder("FROM Product WHERE deleted = false AND (");
+		productsQuery.append("(productName LIKE '%" + searchMap.get("productName") + "%')");
+		productsQuery.append(" AND (productCode LIKE '%" + searchMap.get("productCode") + "%')");
+		productsQuery.append(" AND (unit LIKE '%" + searchMap.get("unit") + "%')");
+		/*if(!searchMap.get("supplier").equals("")) {
+			Supplier supplier = supplierRepo.getSupplierByName(em, searchMap.get("supplier"));
+			productsQuery.append(" AND (supplier = " + supplier.getSupplierId() + ")");
+		} */
+		productsQuery.append(")");
+		TypedQuery<Product> query = em.createQuery(productsQuery.toString(), Product.class);
+		products = query.getResultList();
+		
+		List<Product> temp = new ArrayList<Product>();
+		
+		if(products.size() != 0 && !searchMap.get("supplier").equals("")) {
+			try {
+				Supplier supplier = supplierRepo.getSupplierByName(em, searchMap.get("supplier"));
+				if(supplier != null) {
+					for(int i = 0; i < products.size(); i++) {
+						if(products.get(i).getSupplierBean().getSupplierId() == supplier.getSupplierId())
+							temp.add(products.get(i));
+					}
+				}
+			} catch(Exception e) {
+				
+			}
+			products = temp;
+		}
 
 		return products;
 	}

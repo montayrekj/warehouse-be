@@ -2,6 +2,7 @@ package com.springboot.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -9,13 +10,11 @@ import javax.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.springboot.entities.Product;
 import com.springboot.entities.PurchasesLog;
 import com.springboot.entities.PurchasesLogsItem;
 import com.springboot.entities.User;
 import com.springboot.model.ProductModel;
 import com.springboot.model.PurchasesLogsModel;
-import com.springboot.repository.custom.ProductRepository;
 import com.springboot.repository.custom.PurchaseLogsItemRepository;
 import com.springboot.repository.custom.PurchaseLogsRepository;
 import com.springboot.repository.custom.UserRepository;
@@ -28,9 +27,6 @@ public class PurchaseLogsService {
 	
 	@Autowired
 	private PurchaseLogsRepository purchaseLogsRepo;
-	
-	@Autowired
-	private ProductRepository productRepo;
 	
 	@Autowired
 	private PurchaseLogsItemRepository purchaseLogsItemRepo;
@@ -64,6 +60,24 @@ public class PurchaseLogsService {
 	public List<PurchasesLogsModel> getPurchasesLogs() throws Exception {
 		List<PurchasesLogsModel> purchasesLogsModelList = new ArrayList<PurchasesLogsModel>();
 		List<PurchasesLog> purchasesLogs = purchaseLogsRepo.getPurchaseLogs(em);
+		for(PurchasesLog purchasesLog : purchasesLogs) {
+			PurchasesLogsModel purchasesLogsModel = new PurchasesLogsModel();
+			purchasesLogsModel.setPurchasesLogsId(purchasesLog.getPurchasesLogsId());
+			purchasesLogsModel.setCreatedDate(purchasesLog.getCreatedDate());
+			List<PurchasesLogsItem> purchasesLogsItem = purchaseLogsItemRepo.getPurchaseLogsItemByPurchasesLogsId(em, purchasesLog.getPurchasesLogsId());
+			purchasesLogsModel.setPurchasesLogsItem(purchasesLogsItem);
+			
+			User user = userRepo.getUserById(em, purchasesLog.getCreatedBy());
+			purchasesLogsModel.setCreatedBy(user.getUsername());
+			
+			purchasesLogsModelList.add(purchasesLogsModel);
+		}
+		return purchasesLogsModelList;
+	}
+	
+	public List<PurchasesLogsModel> getPurchasesLogs(Map<String, String> searchMap) throws Exception {
+		List<PurchasesLogsModel> purchasesLogsModelList = new ArrayList<PurchasesLogsModel>();
+		List<PurchasesLog> purchasesLogs = purchaseLogsRepo.getPurchaseLogs(em, searchMap);
 		for(PurchasesLog purchasesLog : purchasesLogs) {
 			PurchasesLogsModel purchasesLogsModel = new PurchasesLogsModel();
 			purchasesLogsModel.setPurchasesLogsId(purchasesLog.getPurchasesLogsId());

@@ -1,5 +1,7 @@
 package com.springboot.service;
 
+import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -17,6 +19,14 @@ public class UserService {
 	@Autowired
 	private UserRepository userRepo;
 	
+	public List<User> getUsers(){
+		return userRepo.getUsers(em);
+	}
+	
+	public User getUserById(Integer id){
+		return userRepo.getUserById(em, id);
+	}
+	
 	public User searchUserByUsername(String username){
 		return userRepo.searchUserByUsername(em, username);
 	}
@@ -29,7 +39,23 @@ public class UserService {
 		userRepo.createUser(em, username, password, userType);
 	}
 	
-	public void updateUser(String username, String password, String userType, boolean deleted) throws Exception{
-		userRepo.updateUser(em, username, password, userType, deleted);
+	public void updateUser(User user) throws Exception{
+		userRepo.updateUser(em, user);
 	}
+	
+	public List<User> getRegionalManager() {
+		return userRepo.getRegionalManager(em);
+	}
+	
+	public List<User> getAccounting() {
+		return userRepo.getAccounting(em);
+	}
+	
+	public List<User> getChecker() {
+		return userRepo.getChecker(em);
+	}
+	
+	/*public void updateUser(String username, String password, String userType, boolean deleted) throws Exception{
+		userRepo.updateUser(em, username, password, userType, deleted);
+	}*/
 }

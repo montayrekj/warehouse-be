@@ -5,7 +5,8 @@
 		<class>com.springboot.config.SpringBootWebApplication</class>
 		<class>com.springboot.controller.IndexController</class>
 		<class>com.springboot.interceptor.LoginInterceptor</class>
-		<class>com.springboot.entities.SalesLog</class>
-		<class>com.springboot.entities.SalesLogsItem</class>
+		<class>com.springboot.entities.Order</class>
+		<class>com.springboot.entities.OrdersItem</class>
+		<class>com.springboot.entities.OrdersItemOut</class>
 	</persistence-unit>
 </persistence>
